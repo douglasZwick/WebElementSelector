@@ -1,0 +1,39 @@
+name: Build Bookmarklet
+
+on:
+  push:
+    branches: [ main ]  # or use 'dev' if you want to isolate
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install Terser
+      run: npm install terser
+
+    - name: Minify and encode JS into bookmarklet
+      run: |
+        npx terser src/selector.js \
+          --compress --mangle \
+          --output dist/selector.min.js \
+          --format ascii
+
+        echo -n "javascript:" > dist/selector.bookmarklet.js
+        node -e "process.stdout.write(encodeURIComponent(require('fs').readFileSync('dist/selector.min.js', 'utf8')))" >> dist/selector.bookmarklet.js
+
+    - name: Commit and push the output
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add dist/
+        git commit -m "Build bookmarklet" || echo "No changes to commit"
+        git push
