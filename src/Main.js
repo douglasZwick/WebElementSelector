@@ -1,3 +1,3 @@
-import { StartElementSelector } from './Selector.js';
+import { Start } from './Module.js';
 
-StartElementSelector();
+Start();
