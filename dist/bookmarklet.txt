@@ -1,1 +1,0 @@
-javascript:(()%3D%3E%7Bfunction%20o()%7Bconsole.log(%22Selector%20module%20A%20loaded!%22)%7Do()%3B%7D)()%3B%0A
