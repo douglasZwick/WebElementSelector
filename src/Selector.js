@@ -1,13 +1,27 @@
 // @ts-check
 
 /**
+ * @typedef  {Object} WesData
+ * @property {boolean} [Active]
+ */
+
+/**
+ * @typedef {window & { __WES?: WesData }} WesWindow
+ */
+
+/** @type {WesWindow} */
+const win = window;
+
+/**
  * 
  * @param {Function} processElement 
  */
 export function StartElementSelector(processElement)
 {
-  if (window.__WesSelectorActive) return;
-  window.__WesSelectorActive = true;
+  if (win.__WES?.Active) return;
+
+  win.__WES = InitializeWesWindow(win.__WES);
+  win.__WES.Active = true;
 
   console.log("WebElementSelector framework activated");
 
@@ -57,4 +71,31 @@ function EatEvent(e)
   e.stopImmediatePropagation();
   
   return false;
+}
+
+
+/**
+ * TODO: Consider creating an actual WesData class and use its constructor
+ *   here instead of what I'm doing now
+ * @param {WesData | undefined} wes - The WES data that already exists
+ * @returns {WesData} - existing if it's already valid, a new WesData if not
+ */
+function InitializeWesWindow(wes)
+{
+  if (IsValidWesData(wes)) return wes;
+
+  return { Active: false };
+}
+
+
+/**
+ * 
+ * @param {any} value The object to validate
+ * @returns {value is WesData} Whether it's a valid WesData
+ */
+function IsValidWesData(value)
+{
+  return typeof value === 'object' &&
+    value != null &&
+    typeof value.Active === 'boolean';
 }
